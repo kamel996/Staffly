@@ -1,20 +1,26 @@
 "use client"
-
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { addEmployee, updateEmployee } from "../app/actions/employees"
-import { useFormState, useFormStatus } from "react-dom"
+import { useFormState } from "react-dom"
 import { Employee } from "@prisma/client"
 import Image from "next/image"
 import SubmitButton from "@/components/SubmitButton";
-
+import BackButton from "./BackButton"
 export function EmployeeForm({ employee }: { employee?: Employee | null }) {
     const [error, action] = useFormState(
         employee == null ? addEmployee : updateEmployee.bind(null, employee.id),
         {}
-    )
+    );
+
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+        }
+    };
 
     return (
         <form action={action} className="space-y-8">
@@ -67,12 +73,19 @@ export function EmployeeForm({ employee }: { employee?: Employee | null }) {
             </div>
 
 
-            <div className="space-y-2">
+             <div className="space-y-2">
                 <Label htmlFor="image">Image</Label>
-                <Input type="file" id="image" name="image" required={employee == null} />
-                {employee != null && (
+                <Input type="file" onChange={handleImageChange} id="image" name="image" accept="image/*" />
+                {selectedImage ? (
                     <Image
-                        src={employee.imagePath}
+                        src={URL.createObjectURL(selectedImage)}
+                        height="400"
+                        width="400"
+                        alt="Employee Image"
+                    />
+                ) : employee && (
+                    <Image
+                        src={employee?.imagePath as string}
                         height="400"
                         width="400"
                         alt="Employee Image"
@@ -80,7 +93,11 @@ export function EmployeeForm({ employee }: { employee?: Employee | null }) {
                 )}
                 {error.image && <div className="text-destructive">{error.image}</div>}
             </div>
-            <SubmitButton />
+            <div>
+                <BackButton />
+                &nbsp;
+                <SubmitButton />
+            </div>
         </form>
     )
 }

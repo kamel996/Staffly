@@ -2,7 +2,6 @@
 
 import db from "@/db/db"
 import { z } from "zod"
-import fs from "fs/promises"
 import { notFound, redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import cloudinary from "@/db/cloudinary";
@@ -94,14 +93,25 @@ export async function updateEmployee(
 
 
 
+
     let imagePath = employee.imagePath
+
+   
+   
     if (data.image != null && data.image.size > 0) {
-        await fs.unlink(`public${employee.imagePath}`)
-        imagePath = `/employees/${crypto.randomUUID()}-${data.image.name}`
-        await fs.writeFile(
-            `public${imagePath}`,
-            Buffer.from(await data.image.arrayBuffer())
-        )
+        const file = data.image;
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = new Uint8Array(arrayBuffer);
+        imagePath = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream({}, (err, callResult) => {
+                if(err){
+                    reject(err);
+                    return
+                }
+                resolve(callResult?.url as string);
+            } ).end(buffer)
+    
+        });
     }
 
     await db.employee.update({
@@ -134,8 +144,6 @@ export async function deleteEmployee(id: string) {
     const employee = await db.employee.delete({ where: { id } })
 
     if (employee == null) return notFound()
-
-    await fs.unlink(`public${employee.imagePath}`)
 
     revalidatePath("/")
 }

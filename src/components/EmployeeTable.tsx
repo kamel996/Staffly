@@ -1,5 +1,3 @@
-import {cache} from "@/lib/cache";
-import db from "@/db/db";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {CheckCircle2, MoreVertical, XCircle} from "lucide-react";
 import {
@@ -51,10 +49,15 @@ export function EmployeesTable({ employees }: EmployeeTableProps) {
             </TableHeader>
             {employees.length === 0 ?
                 (
-                    <p>No employees found</p>
+                    <TableBody>
+                         <TableRow>
+                        <TableCell>No employees found</TableCell>
+                        </TableRow>
+                    </TableBody>
                 ) : (
                     <TableBody>
                         {employees.map(employee => (
+                            
                             <TableRow key={employee.id}>
 
                                 <TableCell>{employee.name}</TableCell>

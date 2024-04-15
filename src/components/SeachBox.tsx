@@ -1,6 +1,5 @@
 "use client"
 import React from 'react';
-import {Button} from "@/components/ui/button";
 import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import {useDebouncedCallback} from "use-debounce";
 import {Employee} from "@prisma/client";
@@ -18,12 +17,12 @@ export default function SearchBox({field} :SearchBoxProps) {
         const params = new URLSearchParams(searchParams);
         params.set("page", "1")
         if (e.target.value) {
-            e.target.value.length > 1 && params.set(field, e.target.value);
+          params.set(field, e.target.value);
         } else {
             params.delete(field);
         }
         replace(`${pathName}?${params}`);
-    }, 300);
+    }, 250);
 
     return (
         <div className="mb-3 md:w-48">
@@ -35,7 +34,6 @@ export default function SearchBox({field} :SearchBoxProps) {
                     onChange={e => handleSearch(e)}
                     aria-label="Search"
                     aria-describedby="search-button" />
-
 
             </div>
         </div>
