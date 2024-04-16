@@ -70,6 +70,7 @@ export function EmployeesTable({ employees }: EmployeeTableProps) {
                                         height="75"
                                         width="75"
                                         alt="Employee Image"
+                                        style={{ width: '75px', height: '75px' }}
                                     />
                                 </TableCell>
                                 <TableCell>

@@ -5,6 +5,10 @@ const nextConfig = {
             {
                 hostname: "res.cloudinary.com",
                 protocol: "http"
+            },
+            {
+                hostname: "picsum.photos",
+                protocol: "https"
             }
         ]
     }
